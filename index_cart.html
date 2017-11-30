@@ -127,6 +127,7 @@
 				onStartDrag:function(){
 					$(this).draggable('options').cursor = 'not-allowed';
 					$(this).draggable('proxy').css('z-index',10);
+				data-toggle:false
 				},
 				onStopDrag:function(){
 					$(this).draggable('options').cursor='move';
@@ -134,21 +135,24 @@
 			});
 			$('.cart').droppable({
 				onDragEnter:function(e,source){
-					$(source).draggable('options').cursor='auto';
+				$(source).draggable('options').cursor='auto';
+				$("#cartMsg").remove();
+			  $(this).append("<span id='cartMsg'> Drop it!</span>");	
+				
 				},
-				onDragLeave:function(e,source){
+				/*onDragLeave:function(e,source){
 					$(source).draggable('options').cursor='not-allowed';
-				},
+				},*/
 				onDrop:function(e,source){
 					
 					var name = $(source).find('h5').html();
 					var price = $(source).find('h6').html();
 					addProduct(name, parseFloat(price.split('N')[1]));
-				alert("Item added: " + name );
 				
-				$("#cartMsg").remove();
-			  $(this).append("<span id='cartMsg'>You know you want it</span>");
-				},
+				  alert("Item added: " + name );
+					$("#cartMsg").remove();
+			    $(this).append("<span id='cartMsg'>You know you want it</span>");
+					},			
 				
 			});
 		});
