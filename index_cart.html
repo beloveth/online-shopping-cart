@@ -15,12 +15,14 @@
 	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
 	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
-	<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
   <style type="text/css">
  /* Remove the navbar's default rounded borders and increase the bottom margin */ 
     .navbar {
       margin-bottom: 50px;
       border-radius: 0;
+			position:fixed;
+			width:100%;
     }
     
     /* Remove the jumbotron's default bottom margin */ 
@@ -80,7 +82,7 @@
 		.cart{
 			position:absolute;
 			right:50px;
-			top:600px;
+			top:680px;
 			width:310px;
 			height:80%;
 			background:#ccc;
@@ -104,7 +106,7 @@
 			padding-right:20px;
 			}
 		.carousel-inner img{
-			max-height:110px;
+			max-height:200px;
 			border:0px;
 			margin:auto;
 			
@@ -112,7 +114,11 @@
 	.highlight{
 		background-color:yellow;
 	}
-	</style>
+	#myCarousel{
+		height:200px;
+	}
+</style>
+
 	<script>
 		var data = {"total":0,"rows":[]};
 		var totalCost = 0;
@@ -127,7 +133,6 @@
 				onStartDrag:function(){
 					$(this).draggable('options').cursor = 'not-allowed';
 					$(this).draggable('proxy').css('z-index',10);
-				data-toggle:false
 				},
 				onStopDrag:function(){
 					$(this).draggable('options').cursor='move';
@@ -140,9 +145,9 @@
 			  $(this).append("<span id='cartMsg'> Drop it!</span>");	
 				
 				},
-				/*onDragLeave:function(e,source){
+				onDragLeave:function(e,source){
 					$(source).draggable('options').cursor='not-allowed';
-				},*/
+				},
 				onDrop:function(e,source){
 					
 					var name = $(source).find('h5').html();
@@ -151,13 +156,12 @@
 				
 				  alert("Item added: " + name );
 					$("#cartMsg").remove();
-			    $(this).append("<span id='cartMsg'>You know you want it</span>");
-					},			
+			    $(this).append("<span id='cartMsg'>You know you make the right choice!</span>");
+					}			
 				
 			});
-		});
-		
-		function addProduct(name,price){
+			});
+			function addProduct(name,price){
 			function add(){
 				for(var i=0; i<data.total; i++){
 					var row = data.rows[i];
@@ -170,7 +174,8 @@
 				data.rows.push({
 					name:name,
 					quantity:1,
-					price:price
+					price:price,
+					remove:'<a href="#" class="remove" onclick="removeProduct(this, event)">X</a>'
 				});
 			}
 			add();
@@ -178,16 +183,32 @@
 			$('#cartcontent').datagrid('loadData', data);
 			$('div.cart .total').html('Total: N'+totalCost);
 		}
+		
+		function removeProduct(el, event){
+			var tr = $(el).closest('tr');
+			var name = tr.find('td[field=name]').text();
+			var price = tr.find('td[field=price]').text();
+			var quantity = tr.find('td[field=quantity]').text();
+			for (var i = 0; i < data.total; i++)
+			{
+				var row = data.rows[i];
+				if (row.name == name){
+					data.rows.splice(i,1);
+					data.total--;
+					break;
+				}
+			}
+			totalCost -= price*quantity;
+			$('#cartcontent').datagrid('loadData', data);
+			$('div.cart .total').html('Total: N'+totalCost);
+		}
+		
+		
+		
 	</script>
 </head>
 <body style="margin:0;padding:0;height:100%;background:#fafafa;">
-  <div class="jumbotron">
-  <div class="container text-center">
-    <h1 style="color:blue">R-I-N Online Store</h1>      
-    <p style="color:cornflowerblue">Mission, Vission & Values</p>
-  </div>
-</div>
-<nav class="navbar navbar-inverse">
+	<nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -212,6 +233,14 @@
     </div>
   </div>
 </nav>
+
+	<div class="jumbotron">
+  <div class="container text-center">
+    <h1 style="color:blue">R-I-N Online Store</h1>      
+    <p style="color:cornflowerblue">Mission, Vision & Values</p>
+  </div>
+</div>
+
 
 <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
@@ -277,6 +306,7 @@
 					<th field="name" width=140>Name</th>
 					<th field="quantity" width=60 align="right">Quantity</th>
 					<th field="price" width=60 align="right">Price</th>
+					<th field = "remove" width=60 align="rigth">Remove</th>
 				</tr>
 			</thead>
 		</table>
